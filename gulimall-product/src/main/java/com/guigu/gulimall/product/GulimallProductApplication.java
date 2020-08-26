@@ -1,8 +1,34 @@
 package com.guigu.gulimall.product;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * 1.整合mybatis-plus
+ *      1）.导入依赖
+ *       <!--使用mybatis-plus-->
+ *        <dependency>
+ *            <groupId>com.baomidou</groupId>
+ *            <artifactId>mybatis-plus-boot-starter</artifactId>
+ *            <version>3.2.0</version>
+ *        </dependency>
+ *      2）.配置
+ *          1.配置数据源
+ *              1）.导入数据库驱动，将他写在common里面
+ *              <dependency>
+ *                  <groupId>mysql</groupId>
+ *                  <artifactId>mysql-connector-java</artifactId>
+ *                  最好是8.0版本的
+ *                  <version>5.1.37</version>
+ *              </dependency>
+ *              2）.在application.yml配置数据源相关信息
+ *          2.配置mybatis-plus
+ *              1）.使用MapperScan扫描接口
+ *              2）.告诉mybatis-plus，SQL的映射文件位置
+ *
+ */
+@MapperScan("com.guigu.gulimall.product.dao")
 @SpringBootApplication
 public class GulimallProductApplication {
 

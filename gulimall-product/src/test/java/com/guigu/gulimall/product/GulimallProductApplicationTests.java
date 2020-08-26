@@ -1,13 +1,34 @@
 package com.guigu.gulimall.product;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.guigu.gulimall.product.entity.BrandEntity;
+import com.guigu.gulimall.product.service.BrandService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 @SpringBootTest
-class GulimallProductApplicationTests {
+public class GulimallProductApplicationTests {
+    @Autowired
+    BrandService brandService;
 
     @Test
-    void contextLoads() {
+     public void contextLoads() {
+//        BrandEntity brandEntity = new BrandEntity();
+//        brandEntity.setName("华为");
+//        brandService.save(brandEntity);
+//
+//        System.out.println("成功");
+
+        //继承IService，有增删改查方法
+        //查询,传的QueryWrapper是查询的条件
+        List<BrandEntity> brand_id = brandService.list(
+                new QueryWrapper<BrandEntity>().eq("brand_id", 2L));
+        brand_id.forEach((item)->{
+            System.out.println(item);
+        });
     }
 
 }

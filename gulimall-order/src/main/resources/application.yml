@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://47.113.95.188:3307/gulimall_oms?useUnicode=true&characterEncoding=UTF-8
+    driver-class-name: com.mysql.jdbc.Driver
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  #classpath*:不止扫描自己的类路径，包括引用其他依赖的jar包的类路径都一起扫
+  #classpath:只扫描自己类下的东西
+
+  #配置每一个类的主键是自增的
+  global-config:
+    db-config:
+      id-type: auto
+
+server:
+  port: 9000
