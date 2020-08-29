@@ -1,10 +1,14 @@
 package com.guigu.gulimall.product.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 
 /**
@@ -37,8 +41,11 @@ public class CategoryEntity implements Serializable {
 	 */
 	private Integer catLevel;
 	/**
-	 * $column.comments
+	 * 0-显示，1-不显示
+	 * 表中的逻辑删除字段和全局的配置是反的，那就定义自己的规则，如下
+	 * value = "1"(逻辑不删除),delval = "0"(逻辑删除)
 	 */
+	@TableLogic(value = "1",delval = "0")  //代表这是一个逻辑删除字段
 	private Integer showStatus;
 	/**
 	 * $column.comments
@@ -56,5 +63,11 @@ public class CategoryEntity implements Serializable {
 	 * $column.comments
 	 */
 	private Integer productCount;
+
+	//它所有的子分类
+	//因为子分类不是数据表里面的属性，所以使用@TableField表里面的属性，
+	// exist = false说明属性在数据表里面不存在，我们加的自定义的属性
+	@TableField(exist = false)
+	private List<CategoryEntity> children;
 
 }

@@ -1,0 +1,50 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: baidu_route
+          uri: https://www.baidu.com
+          #什么时候去百度，就要符合某种断言规则
+          predicates:
+            - Query=url,baidu
+
+        - id: qq_route
+          uri: https://www.qq.com
+          #什么时候去qq，就要符合某种断言规则
+          predicates:
+            - Query=url,qq
+
+#注意：要把顺序给调换一下，要不然转不到product里面的，把精确的路由放在高优先级
+        - id: product_route
+          uri: lb://gulimall-product
+          predicates:
+             - Path=/api/product/**   #优先适配这里的断言，不是下面的
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+#http://localhost:88/api/product/category/list/tree
+#转成http://localhost:10000/product/category/list/tree
+
+        - id: admin_route
+          uri: lb://renren-fast  #lb负载均衡，负载均衡到指定的服务，将请求的地址路由给他
+          predicates:
+            - Path=/api/**  #后台管理系统发的api请求都先直接路由到
+          filters:
+            - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}
+#前端项目，发送请求都带上前缀 /api
+#http://localhost:88/api/captcha.jpg
+#上面的路径要转成真正能访问的这个路径http://localhost:8080/renren-fast/captcha.jpg
+#要把api改成renren-fast
+#可以使用网关带的路径重写filters: - RewritePath
+
+
+
+
+
+
+
+
+
+
+
+
+
