@@ -1,9 +1,14 @@
 package com.guigu.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
+import com.guigu.common.valid.AddGroup;
+import com.guigu.common.valid.UpdateGroup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +20,7 @@ import com.guigu.gulimall.product.service.BrandService;
 import com.guigu.common.utils.PageUtils;
 import com.guigu.common.utils.R;
 
+import javax.validation.Valid;
 
 
 /**
@@ -53,19 +59,45 @@ public class BrandController {
 
     /**
      * 保存
+     * RequestBody:获取请求体的数据，请求体是JSON
+     * 把JSON转成这个对象的
      */
-    @RequestMapping("/save")
-    public R save(@RequestBody BrandEntity brand){
-		brandService.save(brand);
 
+    @RequestMapping("/save")
+    public R save(@Validated({AddGroup.class}) @RequestBody BrandEntity brand){
+        //出现异常会自动的抛出去
+        brandService.save(brand);
         return R.ok();
     }
+
+//    @RequestMapping("/save")
+//    public R save(@Valid @RequestBody BrandEntity brand, BindingResult result){
+//        if(result.hasErrors()){
+//            Map<String,String> map = new HashMap<>();
+//            //获取校验的错误结果
+//            result.getFieldErrors().forEach((item)->{
+//                //FieldError 获取到错误提示
+//                String message = item.getDefaultMessage();
+//                //获取错误的属性的名字
+//                String field = item.getField();
+//                map.put(field,message);
+//            });
+//            return R.error(400,"提交的数据不合法").put("data",map);
+//        }else {
+//            brandService.save(brand);
+//        }
+//
+//
+//        return R.ok();
+//    }
+//
+
 
     /**
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody BrandEntity brand){
+    public R update(@Validated({UpdateGroup.class}) @RequestBody BrandEntity brand){
 		brandService.updateById(brand);
 
         return R.ok();

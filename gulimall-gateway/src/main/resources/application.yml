@@ -24,6 +24,14 @@ spring:
 #http://localhost:88/api/product/category/list/tree
 #转成http://localhost:10000/product/category/list/tree
 
+        - id: third_party_route
+          uri: lb://gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/**   #优先适配这里的断言，不是下面的
+          filters:
+            - RewritePath=/api/thirdparty/(?<segment>.*),/$\{segment}
+
+
         - id: admin_route
           uri: lb://renren-fast  #lb负载均衡，负载均衡到指定的服务，将请求的地址路由给他
           predicates:

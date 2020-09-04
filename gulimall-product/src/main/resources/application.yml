@@ -8,6 +8,12 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+    alicloud:
+      access-key:
+      secret-key:
+      oss:
+        endpoint:
+
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   #classpath*:不止扫描自己的类路径，包括引用其他依赖的jar包的类路径都一起扫
@@ -22,3 +28,5 @@ mybatis-plus:
 
 server:
   port: 10000
+
+
