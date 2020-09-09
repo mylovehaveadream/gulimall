@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 /**
@@ -64,6 +65,8 @@ public class CategoryEntity implements Serializable {
 	 */
 	private Integer productCount;
 
+	//字段不为空的时候，才返回，不会带上空集合了
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	//它所有的子分类
 	//因为子分类不是数据表里面的属性，所以使用@TableField表里面的属性，
 	// exist = false说明属性在数据表里面不存在，我们加的自定义的属性

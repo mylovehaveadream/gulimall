@@ -1,5 +1,6 @@
 package com.guigu.gulimall.product.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -56,5 +57,21 @@ public class AttrEntity implements Serializable {
 	 * $column.comments
 	 */
 	private Integer showDesc;
+
+//	这样写不规范
+//	@TableField(exist = false)
+//	private Long attrGroupId;
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

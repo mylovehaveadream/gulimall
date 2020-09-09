@@ -7,7 +7,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.guigu.common.valid.AddGroup;
+import com.guigu.common.valid.ListValue;
 import com.guigu.common.valid.UpdateGroup;
+import com.guigu.common.valid.UpdateStatusGroup;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
@@ -52,6 +54,9 @@ public class BrandEntity implements Serializable {
 	/**
 	 * $column.comments
 	 */
+	//只能使用0或1这两种情况
+	@NotNull(groups = {AddGroup.class, UpdateStatusGroup.class})
+	@ListValue(vals={0,1},groups = {AddGroup.class, UpdateStatusGroup.class})
 	private Integer showStatus;
 	/**
 	 * $column.comments

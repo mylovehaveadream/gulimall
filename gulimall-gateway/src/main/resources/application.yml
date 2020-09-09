@@ -31,6 +31,19 @@ spring:
           filters:
             - RewritePath=/api/thirdparty/(?<segment>.*),/$\{segment}
 
+        - id: member_route
+        uri: lb://gulimall-member
+        predicates:
+          - Path=/api/member/**   #优先适配这里的断言，不是下面的
+        filters:
+          - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        - id: ware_route
+        uri: lb://gulimall-ware
+        predicates:
+        - Path=/api/ware/**   #优先适配这里的断言，不是下面的
+        filters:
+          - RewritePath=/api/(?<segment>.*),/$\{segment}
 
         - id: admin_route
           uri: lb://renren-fast  #lb负载均衡，负载均衡到指定的服务，将请求的地址路由给他

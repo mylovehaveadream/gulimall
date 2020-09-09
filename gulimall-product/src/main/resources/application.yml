@@ -13,6 +13,8 @@ spring:
       secret-key:
       oss:
         endpoint:
+  jackson:  #对时间进行了格式化
+    date-format: yyy-MM-dd HH:mm:ss
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
@@ -28,5 +30,6 @@ mybatis-plus:
 
 server:
   port: 10000
+
 
 

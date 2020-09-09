@@ -1,5 +1,6 @@
 package com.guigu.gulimall.product.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -22,7 +23,8 @@ public class SpuInfoDescEntity implements Serializable {
 	/**
 	 * $column.comments
 	 */
-	@TableId
+	//指定的是输入的主键，而不是自增的
+	@TableId(type = IdType.INPUT)
 	private Long spuId;
 	/**
 	 * $column.comments
