@@ -2,8 +2,12 @@ package com.guigu.gulimall.search;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
-@SpringBootApplication
+@EnableDiscoveryClient
+//把数据源给排除掉
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 public class GulimallSearchApplication {
 
     public static void main(String[] args) {
