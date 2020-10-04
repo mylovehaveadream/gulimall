@@ -17,6 +17,10 @@ spring:
     date-format: yyy-MM-dd HH:mm:ss
   thymeleaf:  #关闭缓存，实时看到效果
     cache: false
+  redis:
+    host: 47.113.95.188
+    password: 123456
+    port: 6379
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
@@ -32,6 +36,7 @@ mybatis-plus:
 
 server:
   port: 10000
+
 
 
 
