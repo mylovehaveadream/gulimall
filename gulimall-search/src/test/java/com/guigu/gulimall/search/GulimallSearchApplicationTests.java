@@ -31,6 +31,53 @@ import java.util.Map;
 @SpringBootTest
 public class GulimallSearchApplicationTests {
 
+    /**
+     * 给ES存这些数据
+     * (1).方便检索{
+     *     skuId:1
+     *     spuId:11
+     *     skuTitle:华为xx
+     *     price:998
+     *     saleCount:99
+     *     attrs:[
+     *      {尺寸：5寸}，
+     *      {CPU：高通845}，
+     *      {分辨率：全高清}
+     *     ]
+     * }
+     *
+     * 这样会冗余
+     *
+     * (2).
+     * sku索引{
+     *     skuId:1
+     *     spuId:11
+     *     xxxx
+     * }
+     *
+     * attr索引{
+     *     spuId:11
+     *     attrs:[
+     *        {尺寸：5寸}，
+     *        {CPU：高通845}，
+     *        {分辨率：全高清}
+     *     ]
+     * }
+     *
+     *  这样满足了不冗余，但还有问题
+     *
+     *  搜索  小米： 粮食、手机、电器
+     *  10000个、4000个spu
+     *  找到这些spu所有的属性来进行聚合，会做一个分步查询
+     *  分步，4000个spu对应的所有可能属性；
+     *  esClient:spuId:[4000个spuid] 4000*8个字节=32000byte=32kb
+     *  一个请求下来要发32kb的数据
+     *
+     *
+     *  所以最后还是以空间来换取时间，
+     *  选择第一种数据
+     */
+
     @Autowired
     private RestHighLevelClient client;
 

@@ -15,6 +15,8 @@ spring:
         endpoint:
   jackson:  #对时间进行了格式化
     date-format: yyy-MM-dd HH:mm:ss
+  thymeleaf:  #关闭缓存，实时看到效果
+    cache: false
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml

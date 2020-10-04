@@ -16,9 +16,9 @@ import java.util.Map;
 @Slf4j
 //@ResponseBody
 //basePackages处理哪个包下的异常
-//@ControllerAdvice(basePackages = "com.guigu.gulimall.product.controller")
+//@ControllerAdvice(basePackages = "com.guigu.gulimall.product.app")
 //上面两个的结合
-@RestControllerAdvice(basePackages = "com.guigu.gulimall.product.controller")
+@RestControllerAdvice(basePackages = "com.guigu.gulimall.product.app")
 public class GulimallExceptionControllerAdvice {
 
 
