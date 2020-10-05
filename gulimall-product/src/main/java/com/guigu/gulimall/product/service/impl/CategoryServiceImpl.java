@@ -5,6 +5,8 @@ import com.alibaba.fastjson.TypeReference;
 import com.guigu.gulimall.product.service.CategoryBrandRelationService;
 import com.guigu.gulimall.product.vo.Catelog2Vo;
 import org.checkerframework.checker.units.qual.A;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -34,6 +36,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     StringRedisTemplate redisTemplate;
+
+    @Autowired
+    RedissonClient redisson;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -117,6 +122,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //更新关联表里面的
         categoryBrandRelationService.updateCategory
                 (category.getCatId(), category.getName());
+
+        //同时修改缓存中的数据
+        //redis.del("catalogJSON") 删除缓存中的数据；等待下一次主动查询进行更新
     }
 
     @Override
@@ -168,6 +176,32 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return result;
     }
 
+
+    /**
+     * 缓存里面的数据如何和数据库保持一致
+     * 缓存数据一致性
+     * 1.双写模式
+     * 2.失效模式
+     */
+    //使用Redisson来做分布式锁
+    public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithRedissonLock() {
+
+        //1.锁的名字，名字一样锁就一样，锁的粒度，越细越快，反之就越慢
+        //锁的粒度:具体缓存的是某个数据，11-号商品：product-11-lock product-12-lock
+        RLock lock = redisson.getLock("catalogJson-lock");
+        lock.lock();    //加锁了，下面的代码是一个阻塞等待
+
+        Map<String, List<Catelog2Vo>> dataFromDb;
+        try {
+            dataFromDb = getDataFromDb();
+        } finally {
+            lock.unlock();
+        }
+
+        return dataFromDb;
+    }
+
+
     //分布式锁
     public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithRedisLock() {
 
@@ -177,9 +211,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //返回true/false
         //序机不想做了，把锁时间放长一点
         Boolean lock = redisTemplate.opsForValue()
-                .setIfAbsent("lock", uuid,300,TimeUnit.SECONDS);//就是redis的SETNX
+                .setIfAbsent("lock", uuid, 300, TimeUnit.SECONDS);//就是redis的SETNX
 
-        if(lock){
+        if (lock) {
             System.out.println("获取分布式锁成功");
             //加锁成功,占到坑位了,执行业务
 
@@ -188,7 +222,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             Map<String, List<Catelog2Vo>> dataFromDb;
             try {
                 dataFromDb = getDataFromDb();
-            }finally {
+            } finally {
                 //获取值对比+对比成功删除=原子操作     使用lua脚本解锁
                 String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
                 //删除成功返回1，不成功返回0,Integer返回值类型
@@ -208,7 +242,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 //            }
 
             return dataFromDb;
-        }else{
+        } else {
             //加锁失败，重试, synchronized ()这个是一个自旋的方式，一直在重试重试
             //重试太频繁，可以休眠100ms后重试
             System.out.println("获取分布式锁失败。。。等待重试");

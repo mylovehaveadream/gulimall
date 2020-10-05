@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.guigu.gulimall.product.entity.BrandEntity;
 import com.guigu.gulimall.product.service.BrandService;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,6 +21,14 @@ public class GulimallProductApplicationTests {
 
     @Autowired
     StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    RedissonClient redissonClient;
+
+    @Test
+    public void redisson() {
+        System.out.println(redissonClient);
+    }
 
     @Test
     public void teststringRedisTemplate() {
