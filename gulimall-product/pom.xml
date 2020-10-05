@@ -20,6 +20,12 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
         <!--引入Redisson,以后使用Redisson作为所有分布式锁，分布式对象等功能框架-->
         <dependency>
             <groupId>org.redisson</groupId>
