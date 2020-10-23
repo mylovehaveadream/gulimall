@@ -25,6 +25,16 @@ public class R extends HashMap<String, Object> {
 
 	//利用fastjson进行逆转
 	//TypeReference是复杂类型的
+	public <T> T getData(String key,TypeReference<T> typeReference){
+		Object data = get(key);	//默认是map
+		String s = JSON.toJSONString(data);//把拿到的数据先转成文本Json，再来逆转回来
+		//将字符串转换成指定类型的对象
+		T t = JSON.parseObject(s, typeReference);
+		return t;
+	}
+
+	//利用fastjson进行逆转
+	//TypeReference是复杂类型的
 	public <T> T getData(TypeReference<T> typeReference){
 		Object data = get("data");	//默认是map
 		String s = JSON.toJSONString(data);//把拿到的数据先转成文本Json，再来逆转回来

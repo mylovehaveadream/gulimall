@@ -17,7 +17,7 @@ PUT product
             },
             "skuImg":{
               "type":"keyword",
-              index":false,
+              "index":false,
               "doc_values":false
             },
             "saleCount":{

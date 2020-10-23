@@ -1,6 +1,7 @@
 package com.guigu.gulimall.product.app;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.guigu.common.valid.AddGroup;
@@ -32,6 +33,15 @@ import com.guigu.common.utils.R;
 public class BrandController {
     @Autowired
     private BrandService brandService;
+
+
+    @RequestMapping("/infos")
+    public R info(@RequestParam("brandIds") List<Long> brandIds){
+        List<BrandEntity> brand = brandService.getBrandsByIds(brandIds);
+
+        return R.ok().put("brand", brand);
+    }
+
 
     /**
      * 列表
