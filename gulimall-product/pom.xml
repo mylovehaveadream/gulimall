@@ -103,6 +103,12 @@
             <!--<version>3.5.0</version>-->
         <!--</dependency>-->
 
+        <!--写配置的时候，就有提示了，属性的提示工具-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
         
     </dependencies>
 

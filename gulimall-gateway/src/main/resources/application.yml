@@ -62,7 +62,7 @@ spring:
         - id: gulimall_host_route
           uri: lb://gulimall-product  #lb负载均衡，负载均衡到指定的服务,将请求的地址路由给他
           predicates: #域名的规则
-            - Host=gulimall.com    # **:就是任意的子域名
+            - Host=gulimall.com,item.gulimall.com   # **:就是任意的子域名
 #就是gulimall.com下的所有请求，都转给gulimall-product
 
 
