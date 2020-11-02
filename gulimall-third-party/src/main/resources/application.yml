@@ -10,6 +10,12 @@ spring:
         endpoint: oss-cn-beijing.aliyuncs.com
         #默认没有这个属性，这样是方便获取
         bucket: gulimall-hello
+      sms:
+        host: https://smsmsgs.market.alicloudapi.com
+        path: /sms/
+        skin: 1
+        sign: 1
+        appcode: 你的appcode
 
   application:
     name: gulimall-third-party
