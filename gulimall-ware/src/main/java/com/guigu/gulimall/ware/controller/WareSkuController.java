@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.guigu.common.exception.BizCodeEnume;
+import com.guigu.common.exception.NoStockException;
 import com.guigu.gulimall.ware.vo.SkuHasStockVo;
+import com.guigu.gulimall.ware.vo.WareSkuLockVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +30,19 @@ import com.guigu.common.utils.R;
 public class WareSkuController {
     @Autowired
     private WareSkuService wareSkuService;
+
+    //订单锁定库存
+    @PostMapping("/lock/order")
+    public R orderLockStock(@RequestBody WareSkuLockVo vo){
+        try {
+            Boolean stock = wareSkuService.orderLockStock(vo);//返回库存的锁定的状态
+            return R.ok();
+        } catch (NoStockException e){
+            return R.error(BizCodeEnume.NO_STOCK_EXCEPTION.getCode(),BizCodeEnume.NO_STOCK_EXCEPTION.getMsg());
+        }
+
+    }
+
 
     //查询sku是否有库存
     //@RequestBody将请求体里面的JSON数据转换成这个集合

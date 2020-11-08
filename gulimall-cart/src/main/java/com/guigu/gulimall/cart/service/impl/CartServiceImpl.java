@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -55,7 +56,8 @@ public class CartServiceImpl implements CartService {
             //1.远程查询当前要添加的商品的信息
             CompletableFuture<Void> getSkuInfoTask = CompletableFuture.runAsync(() -> {
                 R skuInfo = productFeignService.getSkuInfo(skuId);
-                SkuInfoVo data = skuInfo.getData("skuInfo", new TypeReference<SkuInfoVo>() {});
+                SkuInfoVo data = skuInfo.getData("skuInfo", new TypeReference<SkuInfoVo>() {
+                });
 
                 cartItem.setCheck(true);
                 cartItem.setCount(num);
@@ -113,10 +115,10 @@ public class CartServiceImpl implements CartService {
             //2.如果临时购物车的数据还没有进行合并[合并购物车]
             String tempCartKey = CART_PREFIX + userInfoTo.getUserKey();
             List<CartItem> tempCartItems = getCartItems(tempCartKey);
-            if(tempCartItems != null){
+            if (tempCartItems != null) {
                 //临时购物车有数据，需要合并
                 for (CartItem item : tempCartItems) {
-                    addToCart(item.getSkuId(),item.getCount());
+                    addToCart(item.getSkuId(), item.getCount());
                 }
 
                 //清除临时购物车的数据
@@ -156,7 +158,7 @@ public class CartServiceImpl implements CartService {
     }
 
     //获取购物车里面的所有购物项
-    private List<CartItem> getCartItems(String cartKey){
+    private List<CartItem> getCartItems(String cartKey) {
         BoundHashOperations<String, Object, Object> hashOps = redisTemplate.boundHashOps(cartKey);
         List<Object> values = hashOps.values();
         if (values != null && values.size() > 0) {
@@ -174,7 +176,7 @@ public class CartServiceImpl implements CartService {
 
     //清空购物车数据
     @Override
-    public void clearCart(String cartKey){
+    public void clearCart(String cartKey) {
         redisTemplate.delete(cartKey);
     }
 
@@ -184,9 +186,9 @@ public class CartServiceImpl implements CartService {
     public void checkItem(Long skuId, Integer check) {
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
         CartItem cartItem = geyCartItem(skuId);//获取当前购物车里面指定的购物项
-        cartItem.setCheck(check==1?true:false);
+        cartItem.setCheck(check == 1 ? true : false);
         String s = JSON.toJSONString(cartItem);//最新状态的对象序列化到redis
-        cartOps.put(skuId.toString(),s);
+        cartOps.put(skuId.toString(), s);
     }
 
 
@@ -197,7 +199,7 @@ public class CartServiceImpl implements CartService {
         cartItem.setCount(num);
 
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
-        cartOps.put(skuId.toString(),JSON.toJSONString(cartItem));
+        cartOps.put(skuId.toString(), JSON.toJSONString(cartItem));
     }
 
     //删除购物项
@@ -205,6 +207,32 @@ public class CartServiceImpl implements CartService {
     public void deleteItem(Long skuId) {
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
         cartOps.delete(skuId.toString());
+    }
+
+    @Override
+    public List<CartItem> getUserCartItem() {
+        UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
+        if (userInfoTo.getUserId() == null) {
+            //不登录
+            return null;
+        } else {
+            //登录后的购物车
+            String cartKey = CART_PREFIX + userInfoTo.getUserId();
+            List<CartItem> cartItems = getCartItems(cartKey);
+
+            //获取所有被选中的购物项，同时也要获取最新的价格，实时来查询；不是redis里面的价格，这个价格有可能是几天前或者很久的价格。
+            List<CartItem> collect = cartItems.stream()
+                    .filter(item -> item.getCheck())
+                    .map(item -> {
+                        //TODO 1.更新为最新价格，在商品服务查询
+                        R price = productFeignService.getPrice(item.getSkuId());
+                        String data = (String) price.get("data");
+                        item.setPrice(new BigDecimal(data));
+                        return item;
+                    })
+                    .collect(Collectors.toList());
+            return collect;
+        }
     }
 
 

@@ -3,6 +3,9 @@ package com.guigu.gulimall.order;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
  * 使用RabbitMQ
@@ -19,7 +22,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *      @RabbitHandler：标在方法上（重载区分不同的消息，和@RabbitListener搭配使用）
  *
  */
+@EnableFeignClients
+@EnableRedisHttpSession
 @EnableRabbit
+@EnableDiscoveryClient
 @SpringBootApplication
 public class GulimallOrderApplication {
 

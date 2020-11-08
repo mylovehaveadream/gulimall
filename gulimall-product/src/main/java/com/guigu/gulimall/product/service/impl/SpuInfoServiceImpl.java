@@ -375,6 +375,15 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     }
 
+    @Override
+    public SpuInfoEntity getSpuInfoBySkuId(Long skuId) {
+        //先sku_info表通过skuId找出它的spuId,再去spu_info表找到真正的spu信息
+        SkuInfoEntity byId = skuInfoService.getById(skuId);
+        Long spuId = byId.getSpuId();   //找到spu的id
+        SpuInfoEntity spuInfoEntity = getById(spuId);//spu信息
+        return spuInfoEntity;
+    }
+
 }
 
 
