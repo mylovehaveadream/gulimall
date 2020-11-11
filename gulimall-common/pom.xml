@@ -13,6 +13,20 @@
     <description>每一个微服务公共的依赖，bean,工具类等</description>
 
     <dependencies>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/io.seata/seata-all -->
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-all</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+
+
+
+
         <!--导入org.apache.http.client.HttpClient依赖-->
         <dependency>
             <groupId>com.alibaba</groupId>

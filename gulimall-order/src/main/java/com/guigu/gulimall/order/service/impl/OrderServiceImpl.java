@@ -17,6 +17,8 @@ import com.guigu.gulimall.order.interceptor.LoginUserInterceptor;
 import com.guigu.gulimall.order.service.OrderItemService;
 import com.guigu.gulimall.order.to.OrderCreateTo;
 import com.guigu.gulimall.order.vo.*;
+import io.seata.spring.annotation.GlobalTransactional;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -39,6 +41,8 @@ import com.guigu.common.utils.Query;
 import com.guigu.gulimall.order.dao.OrderDao;
 import com.guigu.gulimall.order.entity.OrderEntity;
 import com.guigu.gulimall.order.service.OrderService;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
@@ -134,12 +138,44 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return confirmVo;
     }
 
+    //同一个对象内事务互调默认失效，原因：绕过了代理对象
+    //事务使用代理对象来控制的
+    //  REQUIRED、REQUIRES_NEW，事务的传播行为
+    @Transactional(timeout = 30)  //a事务的所有设置就传播到了和它共用一个事务的方法
+    public void a(){
+        //这种模式下，b,c做任何设置都没用，都是和a共用一个事务
+        //传播行为就是b、c这两个小事务，要不要与a共用一个事务
+        //b();//a事务，a这个事务设置什么，b的就是什么，b的其他设置就没有效果了;与a共用事务
+        //c();//新事务(不回滚)
+
+        OrderServiceImpl orderService = (OrderServiceImpl) AopContext.currentProxy();   //拿到当前代理对象
+        //使用代理对象调的，下面的设置才有用
+        orderService.b();
+        orderService.c();
+
+        int i = 10/0;   //异常，a和b回滚，c不回滚
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED,timeout = 2)  //REQUIRED需要事务,这个b一定要一个事务
+    public void b(){
+        //这样b与a共用一个事务
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)  //不与a共用一个事务
+    public void c(){}
+
 
     /**
      * 下单
      * @param vo
      * @return
      */
+    //本地事务，在分布式系统，只能控制住自己的回滚，控制不了其他服务的回滚
+    //分布式事务，最大原因：网络问题 + 分布式机器
+    //mysql默认的级别(isolation = Isolation.REPEATABLE_READ)
+
+    //高并发，不适合用它；
+//    @GlobalTransactional    //全局的事务，就能用到seata的事务了，分支的事务不用这个全局的事务，用@Transactional
     @Transactional
     @Override
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
@@ -176,7 +212,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             //他们之间的相差范围小于0.01就算对比成功
             if(Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01){
                 //金额对比
-                //3.保存订单
+                //TODO 3.保存订单
                 saveOrder(order);
                 //4.库存锁定,如果库存锁定失败了，还要撤销订单，整个可以是一个事务；只要有异常回滚订单数据
                 //调用远程的库存服务，wms_ware_sku表
@@ -192,11 +228,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     return itemVo;
                 }).collect(Collectors.toList());
                 lockVo.setLocks(locks);
-                //TODO 远程锁库存
+                //TODO 4.远程锁库存
+                //库存成功了，但是网络原因超时了，订单回滚，库存不滚1
+
+                //为了保证高并发，库存服务自己回滚，可以发消息给库存服务；
+                //库存服务本身也可以使用自动解锁模式 消息队列来完成，使用消息队列来保证最终的一致性
                 R r = wmsFeignService.orderLockStock(lockVo);
                 if(r.getCode() == 0){
                     //锁成功了
                     response.setOrder(order.getOrder());
+
+                    //TODO 5.远程扣减积分 出现异常
+                    int i = 10/0; //订单回滚，库存不滚
                     return response;
                 } else {
                     //锁定失败
