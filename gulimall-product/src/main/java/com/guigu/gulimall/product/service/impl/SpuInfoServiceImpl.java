@@ -13,8 +13,6 @@ import com.guigu.gulimall.product.feign.SearchFeignService;
 import com.guigu.gulimall.product.feign.WareFeignService;
 import com.guigu.gulimall.product.service.*;
 import com.guigu.gulimall.product.vo.*;
-import io.seata.spring.annotation.GlobalTransactional;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

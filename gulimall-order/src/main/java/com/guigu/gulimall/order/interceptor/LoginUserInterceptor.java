@@ -3,6 +3,7 @@ package com.guigu.gulimall.order.interceptor;
 import com.guigu.common.constant.AuthServerConstant;
 import com.guigu.common.vo.MemberRespVo;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,14 @@ public class LoginUserInterceptor implements HandlerInterceptor {
     //访问订单所有的请求都是登录后
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        //  /order/order/status/{orderSn}   如果是请求路径是这样的，就放行
+        String uri = request.getRequestURI();//就是请求后面的路径，上面的路径
+        boolean match = new AntPathMatcher().match("/order/order/status/**", uri);//路径匹配器,这样的路径请求进行放行
+        if(match){
+            return true;    //直接放行
+        }
+
+
         MemberRespVo attribute = (MemberRespVo) request.getSession().getAttribute(AuthServerConstant.LOGIN_USER);
         if(attribute != null) {
             loginUser.set(attribute);

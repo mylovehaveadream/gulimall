@@ -59,6 +59,12 @@ public class MyRabbitConfig {
              */
             @Override
             public void confirm(CorrelationData correlationData, boolean b, String s) {
+                /**
+                 * 1.做好消息确认机制（pulisher,consumer[手动ack]）
+                 * 2.每一个发送的消息都在数据库做好记录，定期将失败的消息再次发送一遍
+                 */
+                //服务器收到了
+                //修改消息的状态
                 System.out.println("CorrelationData:" + correlationData + "->ack:" + b + "->cause" + s);
             }
         });
@@ -75,6 +81,7 @@ public class MyRabbitConfig {
              */
             @Override
             public void returnedMessage(Message message, int i, String s, String s1, String s2) {
+                //报错误了，修改数据库当前消息的状态（日志表）->错误
                 System.out.println("Fail Message:" + message + "->replyCode:" + i +
                         "->replyText:" + s + "->exchange:" + s1 + "->routingKey:" + s2);
             }
