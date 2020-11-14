@@ -87,4 +87,8 @@ spring:
           predicates: #域名的规则
             - Host=order.gulimall.com
 
+        - id: gulimall_member_route
+          uri: lb://gulimall-member  #lb负载均衡，负载均衡到指定的服务,将请求的地址路由给他
+          predicates: #域名的规则
+            - Host=member.gulimall.com
 

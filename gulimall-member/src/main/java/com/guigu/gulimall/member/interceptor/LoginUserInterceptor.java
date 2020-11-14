@@ -1,4 +1,4 @@
-package com.guigu.gulimall.order.interceptor;
+package com.guigu.gulimall.member.interceptor;
 
 import com.guigu.common.constant.AuthServerConstant;
 import com.guigu.common.vo.MemberRespVo;
@@ -17,12 +17,12 @@ public class LoginUserInterceptor implements HandlerInterceptor {
     //访问订单所有的请求都是登录后
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        //   /member/memberreceiveaddress/info/{id}
         //  /order/order/status/{orderSn}   如果是请求路径是这样的，就放行
         String uri = request.getRequestURI();//就是请求后面的路径，上面的路径
-        AntPathMatcher antPathMatcher = new AntPathMatcher();
-        boolean match = antPathMatcher.match("/order/order/status/**", uri);//路径匹配器,这样的路径请求进行放行
-        boolean match1 = antPathMatcher.match("/payed/notify", uri);
-        if(match || match1){
+        boolean match = new AntPathMatcher().match("/member/**", uri);//路径匹配器,这样的路径请求进行放行
+        if(match){
             return true;    //直接放行
         }
 

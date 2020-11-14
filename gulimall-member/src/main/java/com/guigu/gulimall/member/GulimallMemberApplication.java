@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  *  basePackages,远程调用的接口包，只要服务一启动，就会自动扫描这个包下所有标了
  *  @FeignClient注解的接口
  */
+@EnableRedisHttpSession
 @EnableFeignClients(basePackages = "com.guigu.gulimall.member.feign")
 @EnableDiscoveryClient
 @SpringBootApplication
